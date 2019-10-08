@@ -1,17 +1,16 @@
 ﻿{
-function myScript(thisObj) {
-    function myScript_buildUI(thisObj){
-            var myPanel = (thisObj instanceof Panel) ? thisObj : new Window("palette", "Extract EXR", undefined, {resizeable:true});
+    function myScript(thisObj){
+        function myScript_buildUI(thisObj){
+            var myPanel = (thisObj instanceof Panel) ? thisObj : new Window('palette', 'My window name', undefined, {resizeable:true});
             
-                //resource list for UI buttons
-            res = "group{orientation:'column',alignment:['fill','fill'],\
-                        groupOne: Panel{text:'Enabled Effects',orientation:'row',alignment:['fill','top'],alignChildren:['left','top']minimumSize:[50,50],\
+           res = "group{orientation:'column',alignment:['fill','fill'],\
+                        groupOne: Panel{text:'Enabled Effects',orientation:'row',alignment:['fill','top'],alignChildren:['left','top'],minimumSize:[50,50],\
                             exr: Checkbox{text:'EXtractoR'},\
                             gamma: Checkbox{text:'Exposure'},\
                             gamLabel: StaticText{text:'Adjust Gamma:'},\
-                            gamEdit: EditText{preferredSize:[70,-1]},\
+                            gamEdit: EditText{minimumSize:[40,-1]},\
                         },\
-                        groupTwo: Group{orientation:'row',alignment:['fill','center'],alignChildren:['fill','fill'],minimumSize:[50,20],\
+                        groupTwo: Group{orientation:'row',alignment:['center','top'],alignChildren:['fill','fill'],minimumSize:[50,20],\
                             addFX: Button{text:'Add FX'},\
                         },\
                     }";
@@ -25,28 +24,20 @@ function myScript(thisObj) {
             ex1.gamma.value = true; //boxed is checked
             ex1.gamEdit.text = "2.2"; //default gamma correction
             
-            //Setup panel sizing
-//~             myPanel.layout.layout(true);
-//~             myPanel.grp.minimumSize = myPanel.grp.size;
-            
-            //Resizeability
-//~             myPanel.layout.resize();
-//~             myPanel.onResizing = myPanel.onResize = function(){this.layout.resize()};
-
+            myPanel.layout.layout(true);
             return myPanel;
-        }
-    
-        var myScriptPal = myScript_buildUI (thisObj);
+            }
+        var myScriptPal = myScript_buildUI(thisObj);
         
-        if((myScriptPal != null) && (myScriptPal instanceof Window)){
-            myScriptPal.center;
+        if((myScriptPal != null) && (myScriptPal instanceof Window)) {
+            myScriptPal.center();
             myScriptPal.show();
             }
-    
-}
-            
-myScript(this);
-}
+        
+        }
+   
+   myScript(this);
+   }
 
 ex2.addFX.onClick = function() {
     // create an undo group
