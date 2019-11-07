@@ -1,7 +1,7 @@
-﻿{
+﻿{    
     function myScript(thisObj){
         function myScript_buildUI(thisObj){
-            var myPanel = (thisObj instanceof Panel) ? thisObj : new Window('palette', 'AE Tools', undefined, {resizeable:true});
+            var myPanel = (thisObj instanceof Panel) ? thisObj : new Window('palette', 'AE Tools', undefined, {resizeable:true}, {scrollable:true});
 
            res = "Group{orientation:'column',alignment:['fill','left'],\
                             groupZero: Panel{text:'Active Tools',orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],spacing:0,\
@@ -25,6 +25,7 @@
                                 },\
                             groupFour: Panel{text:'Add Layers', orientation:'column', alignment:['fill','top'], alignChildren:['center','top'], spacing:0,\
                                 groupFourA: Group{orientation:'row', alignment:['fill','top'], alignChildren:['left','center'],spacing:5,\
+                                ssync: Button{text:'↧',spacing: 0, maximumSize:[25,100]},\
                                 width: StaticText{text:'W:',spacing:0},\
                                 swidth: EditText{minimumSize:[40,0]},\
                                 height: StaticText{text:'H:',spacing:0},\
@@ -36,7 +37,7 @@
                                     sblack: Button{text:'Black', spacing:0},\
                                     sgrey: Button{text:'50% Grey',spacing: 0},\
                                     swhite: Button{text:'White', spacing:0},\
-                                    scustom: Button{text:'Custom', spacing:0},\
+                                    scustombutton: Button{text:'Custom', spacing:0},\
                                 },\
                                 groupFourC: Group{orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0,spacing:0,\
                                     sadjust: Button{text:'Adjustment Layer', spacing:0},\
@@ -88,17 +89,23 @@
             ex2b = myPanel.grp.groupTwo.groupTwoB; //QuickFX B
             ex3a = myPanel.grp.groupThree.groupThreeA; //ChromaFX A
             ex3b = myPanel.grp.groupThree.groupThreeB; //ChromaFX B
-            ex4b = myPanel.grp.groupFour; //Add Layers
+            ex4a = myPanel.grp.groupFour.groupFourA; //Add Layers
+            ex4b = myPanel.grp.groupFour.groupFourB; //Add layer strip 2
 
             //Defaults
             ex0a.exr.value = false;
-            ex0a.layer.value = true;
+            ex0a.layer.value = false;
             ex0a.quick.value = false;
             ex0a.chroma.value = false;
             ex1a.exr.value = true; //box is checked
             ex1a.gamma.value = true; //boxed is checked
             ex1a.gamEdit.text = "2.2"; //default gamma correction
+            ex4a.swidth.text = "1920";
+            ex4a.sheight.text = "1080";
+//~             ex4a.scustom.text = "red";
             
+            // Import Color Reference:
+            //@include "color_references.jsx";    
             
             //HideInitials
             var ini = [myPanel.grp.groupOne,myPanel.grp.groupTwo,myPanel.grp.groupThree,myPanel.grp.groupFour];
@@ -109,8 +116,27 @@
                 ini[i].hide();
                 }
                 }
-           
-            
+//~            
+            ex4a.scustom.onChange= function() {
+               ex4a.scustom.text = ex4a.scustom.text.toLowerCase();
+               hexcheck = ex4a.scustom.text[0];
+                    if (COLORS[ex4a.scustom.text]) {
+                        ex4a.scustom.text = COLORS[ex4a.scustom.text];
+                        ex4a.scustom.text = ex4a.scustom.text.toLowerCase();
+                        }
+                    else if (COLORS[ex4a.scustom.text]!=true && (hexcheck != '#') || (hexcheck=='#' && (ex4a.scustom.text.length != 4) && (ex4a.scustom.text.length != 7)) && ex4a.scustom.text.length>0){
+                        alert('"' + ex4a.scustom.text+'" is not a valid color input.', 'Error');
+                        }
+                }
+//~ COLORS[ex4a.scustom.text]!=true && (hexcheck != '#') || 
+            ex4b.scustombutton.onClick = function() {
+               ex4a.scustom.text = ex4a.scustom.text.toLowerCase();
+                    if (COLORS[ex4a.scustom.text]) {
+                        ex4a.scustom.text = COLORS[ex4a.scustom.text];
+                        }                    
+                }
+//~             
+//~             
            ex0a.exr.onClick = function() {
                 if (ex0a.exr.value == false) {
                     myPanel.grp.groupOne.maximumSize.height=0;
