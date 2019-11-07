@@ -7,12 +7,13 @@
                             groupZero: Panel{text:'Active Tools',orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],spacing:0,\
                                 groupZeroA: Group{orientation: 'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0,\
                                 exr: Checkbox{text:'EXR'},\
+                                layer: Checkbox{text:'Layers'},\
                                 quick: Checkbox{text:'QuickFX'},\
                                 chroma: Checkbox{text:'ChromaFX'},\
                                 },\
                             },\
                             groupOne: Panel{text:'EXR Workflow',alignment:['fill','top'],alignChildren:['fill','top'],spacing:0,\
-                                    groupOneA: Group{orientation: 'row',alignment:['fill','top'],alignChildren:['left','top'],minimumSize:[50,10], margins:0,\
+                                    groupOneA: Group{orientation: 'row',alignment:['fill','top'],alignChildren:['left','center'],minimumSize:[50,0], margins:0,\
                                         exr: Checkbox{text:'EXtractoR'},\
                                         gamma: Checkbox{text:'Exposure'},\
                                         gamLabel: StaticText{text:'Gamma:'},\
@@ -22,6 +23,32 @@
                                         addFX: Button{text:'EXtRact!', spacing: 0,margins: 0},\
                                         },\
                                 },\
+                            groupFour: Panel{text:'Add Layers', orientation:'column', alignment:['fill','top'], alignChildren:['center','top'], spacing:0,\
+                                groupFourA: Group{orientation:'row', alignment:['fill','top'], alignChildren:['left','center'],spacing:5,\
+                                width: StaticText{text:'W:',spacing:0},\
+                                swidth: EditText{minimumSize:[40,0]},\
+                                height: StaticText{text:'H:',spacing:0},\
+                                sheight: EditText{minimumSize:[40,0]},\
+                                custom: StaticText{text:'Custom Color:', spacing: 0},\
+                                scustom: EditText{minimumSize:[80,0]},\
+                                },\
+                                groupFourB: Group{orientation:'row', alignment:['fill','top'], alignChildren:['fill','center'],margins:0,spacing:0,\
+                                    sblack: Button{text:'Black', spacing:0},\
+                                    sgrey: Button{text:'50% Grey',spacing: 0},\
+                                    swhite: Button{text:'White', spacing:0},\
+                                    scustom: Button{text:'Custom', spacing:0},\
+                                },\
+                                groupFourC: Group{orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0,spacing:0,\
+                                    sadjust: Button{text:'Adjustment Layer', spacing:0},\
+                                    snull: Button{text:'Null Object', spacing:0},\
+                                    sshape: Button{text:'Shape Layer', spacing:0},\
+                                    },\
+                                groupFourD: Group{orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0,spacing:0,\
+                                    stext: Button{text:'Text Layer', spacing:0},\
+                                    scam: Button{text:'Camera', spacing:0},\
+                                    slight: Button{text:'Light', spacing:0},\
+                                    },\
+                            },\
                             groupTwo: Panel{text:'QuickFX', orientation:'row',alignment:['fill','top'], alignChildren:['fill','top'],\
                                 groupTwoA: Group{orientation:'column',alignment:['fill','top'], alignChildren:['fill','top'],margins:0, spacing:0,\
                                     quickCamBlur: Button{text:'Camera Lens Blur', spacing: 0,margins: 0},\
@@ -54,21 +81,34 @@
             myPanel.grp = myPanel.add(res);
 
             ///GroupNames
-            ex0a = myPanel.grp.groupZero.groupZeroA;
+            ex0a = myPanel.grp.groupZero.groupZeroA; //Checkboxes
             ex1a = myPanel.grp.groupOne.groupOneA; //EXR Tools
             ex1b = myPanel.grp.groupOne.groupOneB; //EXR Add FX
             ex2a = myPanel.grp.groupTwo.groupTwoA; //QuickFX A
             ex2b = myPanel.grp.groupTwo.groupTwoB; //QuickFX B
             ex3a = myPanel.grp.groupThree.groupThreeA; //ChromaFX A
-            ex3b = myPanel.grp.groupThree.groupThreeB;
+            ex3b = myPanel.grp.groupThree.groupThreeB; //ChromaFX B
+            ex4b = myPanel.grp.groupFour; //Add Layers
 
             //Defaults
-            ex0a.exr.value = true;
-            ex0a.quick.value = true;
-            ex0a.chroma.value = true;
+            ex0a.exr.value = false;
+            ex0a.layer.value = true;
+            ex0a.quick.value = false;
+            ex0a.chroma.value = false;
             ex1a.exr.value = true; //box is checked
             ex1a.gamma.value = true; //boxed is checked
             ex1a.gamEdit.text = "2.2"; //default gamma correction
+            
+            
+            //HideInitials
+            var ini = [myPanel.grp.groupOne,myPanel.grp.groupTwo,myPanel.grp.groupThree,myPanel.grp.groupFour];
+            var check = [ex0a.exr.value,ex0a.quick.value,ex0a.chroma.value,ex0a.layer.value];
+            for (i=0; i<ini.length; i++) {
+                 if(check[i] == false) {
+                ini[i].maximumSize.height=0;
+                ini[i].hide();
+                }
+                }
            
             
            ex0a.exr.onClick = function() {
@@ -109,6 +149,20 @@
             myPanel.layout.layout(true);
             return myPanel;
                }
+            
+            ex0a.layer.onClick = function() {
+                if (ex0a.layer.value == false) {
+                    myPanel.grp.groupFour.maximumSize.height=0;
+                    myPanel.grp.groupFour.hide();
+                }
+                else {
+                    myPanel.grp.groupFour.maximumSize.height=500;
+                    myPanel.grp.groupFour.show();
+                }
+            myPanel.layout.layout(true);
+            return myPanel;
+               }
+           
             
 
             myPanel.layout.layout(true);
