@@ -28,5 +28,3 @@ Load up AE, and go to Window. Select the UI Script from the bottom of the list.
 //The panel does not currently scroll, so you will need to expand the panel to see the options you need. The current workaround utilizes checkbox toggles to hide the effets you don't currently need so the panel is vertically shorter, but a complete rebuild will be needed to make it scroll in the future.
 
 //The panel resets itself everytime you load AE. Future versions will hopefully remember the user's last settings.
-
-//Additional subpanels will be added to quickly add a Solid, Adjustment Layer, Null Object, etc.
