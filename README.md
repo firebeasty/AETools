@@ -6,8 +6,11 @@ AE Tools creates a panel in After Effects that allows the artist to quickly add 
 ***EXR Workflow***
 EXR Workflow gives you a UI panel to quickly add EXtractoR and Exposure effects to any selected layers with the click of a single button! You can also optionally check and uncheck which of the effects you want to add, while also customizing the Gamma Correction (default 2.2) of the Exposure effect by typing in the provided text field.
 
+***Layers***
+The Add Layers panel creates a set of shortcuts to quickly generate layers, with additional functionality to quickly edit the composition background color.
+
 ***Quick FX***
-QuickFX adds an additional section to the panel using commonly-used effects. These are hardcoded for the timing-being, but will hopefully become dynamically added in the future by the user.
+QuickFX adds an additional section to the panel using commonly-used effects. These are hardcoded for the time-being, but will hopefully become dynamically added in the future by the user.
 
 ***Chroma FX***
 ChromaFX adds an additional section to the panel that contains effects used commonly in a green-screen or matting workflow.
