@@ -16,7 +16,7 @@ QuickFX adds an additional section to the panel using commonly-used effects. The
 ChromaFX adds an additional section to the panel that contains effects used commonly in a green-screen or matting workflow.
 
 # Installation
-Install AETools by downloading the .jsx from the 'QuickFX' folder. Place the .jsx file into your After Effects installation directory.
+Install AETools by downloading the two .jsx files from the 'QuickFX' folder. Place both of the .jsx files into your After Effects installation directory.
 For example: "C:\Program Files\Adobe\Adobe After Effects CC 2019\Support Files\Scripts\ScriptUI Panels".
 
 Load up AE, and go to Window. Select the UI Script from the bottom of the list.
