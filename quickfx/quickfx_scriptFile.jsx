@@ -6,36 +6,36 @@
            res = "Group{orientation:'column',alignment:['fill','left'],\
                             groupZero: Panel{text:'Active Tools',orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],spacing:0,\
                                 groupZeroA: Group{orientation: 'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0,\
-                                exr: Checkbox{text:'EXR'},\
-                                layer: Checkbox{text:'Layers'},\
-                                quick: Checkbox{text:'QuickFX'},\
-                                chroma: Checkbox{text:'ChromaFX'},\
+                                exr: Checkbox{text:'EXR',helpTip:'Toggles EXR Workflow Panel'},\
+                                layer: Checkbox{text:'Layers',helpTip:'Toggles Add Layers Panel'},\
+                                quick: Checkbox{text:'QuickFX',helpTip:'Toggles QuickFX Panel'},\
+                                chroma: Checkbox{text:'ChromaFX',helpTip:'Toggles ChromaFX Panel'},\
                                 },\
                             },\
                             groupOne: Panel{text:'EXR Workflow',alignment:['fill','top'],alignChildren:['fill','top'],spacing:0,\
                                     groupOneA: Group{orientation: 'row',alignment:['fill','top'],alignChildren:['left','center'],minimumSize:[50,0], margins:0,\
-                                        exr: Checkbox{text:'EXtractoR'},\
-                                        gamma: Checkbox{text:'Exposure'},\
+                                        exr: Checkbox{text:'EXtractoR',helpTip:'Enables EXtractoR'},\
+                                        gamma: Checkbox{text:'Exposure',helpTip:'Enables Exposure'},\
                                         gamLabel: StaticText{text:'Gamma:'},\
-                                        gamEdit: EditText{minimumSize:[40,0]},\
+                                        gamEdit: EditText{minimumSize:[40,0],helpTip:'Sets gamma correction on Exposure effect. Default: 2.2'},\
                                         },\
                                     groupOneB: Group{orientation:'column',alignment:['fill','top'],alignChildren:['fill','top'],margins:0, spacing:0,\
-                                        addFX: Button{text:'EXtRact!', spacing: 0,margins: 0},\
+                                        addFX: Button{text:'EXtRact!', spacing: 0,margins: 0,helpTip:'Add selected FX to selected layer(s)'},\
                                         },\
                                 },\
                             groupFour: Panel{text:'Add Layers', orientation:'column', alignment:['fill','top'], alignChildren:['center','top'], spacing:0,\
                                 groupFourA: Group{orientation:'row', alignment:['fill','top'], alignChildren:['left','center'],spacing:5,\
-                                ssync: Button{text:'↧',spacing: 0, maximumSize:[25,100]},\
+                                ssync: Button{text:'↧',spacing: 0, maximumSize:[25,100], helpTip:'Get dimensions from active comp'},\
                                 width: StaticText{text:'W:',spacing:0},\
                                 swidth: EditText{minimumSize:[40,0]},\
                                 height: StaticText{text:'H:',spacing:0},\
                                 sheight: EditText{minimumSize:[40,0]},\
                                 custom: StaticText{text:'Custom Color:', spacing: 0},\
-                                scustom: EditText{minimumSize:[80,0]},\
+                                scustom: EditText{minimumSize:[80,0], helpTip:'Enter any hex-color or X11 color preset (e.g. #ff0000, red, indigo)'},\
                                 },\
                                 groupFourB: Group{orientation:'row', alignment:['fill','top'], alignChildren:['fill','center'],margins:0,spacing:0,\
                                     sblack: Button{text:'Black', spacing:0},\
-                                    sgrey: Button{text:'50% Grey',spacing: 0},\
+                                    sgrey: Button{text:'50-Grey',spacing: 0},\
                                     swhite: Button{text:'White', spacing:0},\
                                     scustombutton: Button{text:'Custom', spacing:0},\
                                 },\
@@ -44,10 +44,14 @@
                                     snull: Button{text:'Null Object', spacing:0},\
                                     sshape: Button{text:'Shape Layer', spacing:0},\
                                     },\
+                                groupFourDa: Group{orientation:'row', alignment:['fill','top'],alignChildren:['left','top'],margins:0,spacing:0,\
+                                    clabel: StaticText{text:'Composition BG Color:', spacing:0},\
+                                },\
                                 groupFourD: Group{orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0,spacing:0,\
-                                    stext: Button{text:'Text Layer', spacing:0},\
-                                    scam: Button{text:'Camera', spacing:0},\
-                                    slight: Button{text:'Light', spacing:0},\
+                                    cblack: Button{text:'Black', spacing:0},\
+                                    cgrey: Button{text:'50-Grey', spacing:0},\
+                                    cwhite: Button{text:'White', spacing:0},\
+                                    ccustom: Button{text:'Custom', spacing:0},\
                                     },\
                             },\
                             groupTwo: Panel{text:'QuickFX', orientation:'row',alignment:['fill','top'], alignChildren:['fill','top'],\
@@ -90,11 +94,13 @@
             ex3a = myPanel.grp.groupThree.groupThreeA; //ChromaFX A
             ex3b = myPanel.grp.groupThree.groupThreeB; //ChromaFX B
             ex4a = myPanel.grp.groupFour.groupFourA; //Add Layers
-            ex4b = myPanel.grp.groupFour.groupFourB; //Add layer strip 2
+            ex4b = myPanel.grp.groupFour.groupFourB;
+            ex4c = myPanel.grp.groupFour.groupFourC;
+            ex4d = myPanel.grp.groupFour.groupFourD;
 
             //Defaults
             ex0a.exr.value = false;
-            ex0a.layer.value = false;
+            ex0a.layer.value = true;
             ex0a.quick.value = false;
             ex0a.chroma.value = false;
             ex1a.exr.value = true; //box is checked
@@ -102,10 +108,8 @@
             ex1a.gamEdit.text = "2.2"; //default gamma correction
             ex4a.swidth.text = "1920";
             ex4a.sheight.text = "1080";
-//~             ex4a.scustom.text = "red";
+
             
-            // Import Color Reference:
-            //@include "color_references.jsx";    
             
             //HideInitials
             var ini = [myPanel.grp.groupOne,myPanel.grp.groupTwo,myPanel.grp.groupThree,myPanel.grp.groupFour];
@@ -117,27 +121,35 @@
                 }
                 }
 //~            
-            ex4a.scustom.onChange= function() {
-               ex4a.scustom.text = ex4a.scustom.text.toLowerCase();
-               hexcheck = ex4a.scustom.text[0];
-                    if (COLORS[ex4a.scustom.text]) {
-                        ex4a.scustom.text = COLORS[ex4a.scustom.text];
-                        ex4a.scustom.text = ex4a.scustom.text.toLowerCase();
-                        }
-                    else if (COLORS[ex4a.scustom.text]!=true && (hexcheck != '#') || (hexcheck=='#' && (ex4a.scustom.text.length != 4) && (ex4a.scustom.text.length != 7)) && ex4a.scustom.text.length>0){
-                        alert('"' + ex4a.scustom.text+'" is not a valid color input.', 'Error');
-                        }
-                }
-//~ COLORS[ex4a.scustom.text]!=true && (hexcheck != '#') || 
-            ex4b.scustombutton.onClick = function() {
-               ex4a.scustom.text = ex4a.scustom.text.toLowerCase();
-                    if (COLORS[ex4a.scustom.text]) {
-                        ex4a.scustom.text = COLORS[ex4a.scustom.text];
-                        }                    
-                }
-//~             
-//~             
-           ex0a.exr.onClick = function() {
+
+            // Import Color Reference:
+            //@include "color_references.jsx";    
+
+//CHANGING CUSTOM COLOR NAME
+ex4a.scustom.onChange= function() {
+    hexcheck = ex4a.scustom.text[0];
+    
+    if (hexcheck == '#') {      
+        colorName = "Custom";
+    }
+    else if (hexcheck != '#') {
+        colorName = ex4a.scustom.text;
+    }
+   
+    ex4a.scustom.text = ex4a.scustom.text.toLowerCase(); // converts string to lowercase
+    ex4a.scustom.text = ex4a.scustom.text.replace(/\s/g,''); //removes spaces from input string
+        
+    if (COLORS[ex4a.scustom.text]) {
+        ex4a.scustom.text = COLORS[ex4a.scustom.text]; //converts color name to hex
+        ex4a.scustom.text = ex4a.scustom.text.toLowerCase(); //converts hex to lowercase
+    }
+    else if (COLORS[ex4a.scustom.text]!=true && (hexcheck != '#') || (hexcheck=='#' && (ex4a.scustom.text.length != 4) && (ex4a.scustom.text.length != 7)) && ex4a.scustom.text.length>0){
+        alert('"' + ex4a.scustom.text+'" is not a valid color input.', 'Error');
+    }
+}
+
+            //Enable EXR Panel
+            ex0a.exr.onClick = function() {
                 if (ex0a.exr.value == false) {
                     myPanel.grp.groupOne.maximumSize.height=0;
                     myPanel.grp.groupOne.hide();
@@ -146,10 +158,11 @@
                     myPanel.grp.groupOne.maximumSize.height=500;
                     myPanel.grp.groupOne.show();
                 }
-            myPanel.layout.layout(true);
-            return myPanel;
+                myPanel.layout.layout(true);
+                return myPanel;
                }
            
+           //Enable Quick FX Panel
             ex0a.quick.onClick = function() {
                 if (ex0a.quick.value == false) {
                     myPanel.grp.groupTwo.maximumSize.height=0;
@@ -159,10 +172,11 @@
                     myPanel.grp.groupTwo.maximumSize.height=500;
                     myPanel.grp.groupTwo.show();
                 }
-            myPanel.layout.layout(true);
-            return myPanel;
+                myPanel.layout.layout(true);
+                return myPanel;
                }
            
+           //Enable ChromaFX Panel
             ex0a.chroma.onClick = function() {
                 if (ex0a.chroma.value == false) {
                     myPanel.grp.groupThree.maximumSize.height=0;
@@ -176,6 +190,7 @@
             return myPanel;
                }
             
+            //Enable Layer Panel
             ex0a.layer.onClick = function() {
                 if (ex0a.layer.value == false) {
                     myPanel.grp.groupFour.maximumSize.height=0;
@@ -189,8 +204,7 @@
             return myPanel;
                }
            
-            
-
+            //Updates panel
             myPanel.layout.layout(true);
             return myPanel;
             }
@@ -206,6 +220,7 @@
    myScript(this);
    }
 
+//Add enabled EXR FX
 ex1b.addFX.onClick = function() {
     // create an undo group
     app.beginUndoGroup("Extraction");
@@ -229,6 +244,195 @@ ex1b.addFX.onClick = function() {
     // close the undo group
     app.endUndoGroup();
 }
+
+ex4a.ssync.onClick = function() {
+    var curItem = app.project.activeItem;
+    ex4a.swidth.text = curItem.width;
+    ex4a.sheight.text = curItem.height;
+}
+
+//
+/* BEGINNING OF ADD LAYERS */
+//
+
+//ADD SOLIDS
+    //BLACK
+    ex4b.sblack.onClick = function() {
+        app.beginUndoGroup("blacksolid");
+            curItem = app.project.activeItem;
+            cuswidth = parseInt(ex4a.swidth.text);
+            cusheight = parseInt(ex4a.sheight.text);
+           
+            curItem.layers.addSolid([0,0,0], 'Black Solid', cuswidth, cusheight, 1.0); //Draws solid
+            app.endUndoGroup();
+        }
+    
+    //GREY
+    ex4b.sgrey.onClick = function() {
+        app.beginUndoGroup("greysolid");
+            curItem = app.project.activeItem;
+            cuswidth = parseInt(ex4a.swidth.text);
+            cusheight = parseInt(ex4a.sheight.text);
+           
+            curItem.layers.addSolid([0.5,0.5,0.5], '50-Grey Solid', cuswidth, cusheight, 1.0); //Draws solid
+            app.endUndoGroup();
+        }
+    
+    //WHITE
+    ex4b.swhite.onClick = function() {
+        app.beginUndoGroup("whitesolid");
+            curItem = app.project.activeItem;
+            cuswidth = parseInt(ex4a.swidth.text);
+            cusheight = parseInt(ex4a.sheight.text);
+           
+            curItem.layers.addSolid([1,1,1], 'White Solid', cuswidth, cusheight, 1.0); //Draws solid
+            app.endUndoGroup();
+        }
+    
+    //ADJUSTMENT
+    ex4c.sadjust.onClick = function() {
+        app.beginUndoGroup("adjust");
+            curItem = app.project.activeItem;
+            cuswidth = curItem.width;
+            cusheight = curItem.height;
+            
+            adjustment = curItem.layers.addSolid([1,1,1], 'Adjustment Layer', cuswidth, cusheight, 1.0); //Creates Solid
+            adjustment.adjustmentLayer = true;
+            app.endUndoGroup();
+        }
+    
+    //NULL
+    ex4c.snull.onClick = function() {
+        app.beginUndoGroup("null");
+            curItem = app.project.activeItem;
+            curItem.layers.addNull();
+            
+            app.endUndoGroup();
+        }
+    
+    //SHAPE
+    ex4c.sshape.onClick = function() {
+        app.beginUndoGroup("shape");
+            curItem = app.project.activeItem;
+            curItem.layers.addShape();
+        
+            app.endUndoGroup();
+        }
+
+
+//CLICKING CUSTOM SOLID BUTTON
+ex4b.scustombutton.onClick = function() {                
+    if (ex4a.scustom.text != "") {
+            var cuscolor = ex4a.scustom.text;
+            
+            if (cuscolor.length == 7) {
+                var hex1 = parseInt(cuscolor[1],16);
+                var hex2 = parseInt(cuscolor[2],16);
+                var hex3 = parseInt(cuscolor[3],16);
+                var hex4 = parseInt(cuscolor[4],16);
+                var hex5 = parseInt(cuscolor[5],16);
+                var hex6 = parseInt(cuscolor[6],16);
+
+                var r = (((hex1)*16+(hex2))/255);
+                var g = (((hex3)*16+(hex4))/255);
+                var b = (((hex5)*16+(hex6))/255);
+            }
+
+            if(cuscolor.length == 4) {
+                var hex1 = parseInt(cuscolor[1],16);
+                var hex2 = parseInt(cuscolor[2],16);
+                var hex3 = parseInt(cuscolor[3],16);
+
+                var r = (((hex1)*16)/240);
+                var g = (((hex2)*16)/240);
+                var b = (((hex3)*16)/240);
+            }
+
+            curItem = app.project.activeItem;
+            cuswidth = parseInt(ex4a.swidth.text);
+            cusheight = parseInt(ex4a.sheight.text);
+            
+            app.beginUndoGroup("customsolid");
+            curItem.layers.addSolid([r,g,b], colorName+' Solid', cuswidth, cusheight, 1.0); //Draws solid
+            app.endUndoGroup();
+      }
+    else if (ex4a.scustom.text == "") {
+        alert("Input a custom color. For example 'red', '#fff', or '#ff0000'.", "Custom Color Error");
+        }
+}
+
+//COMPOSITION BACKGROUND COLOR
+
+//BLACK BG
+ex4d.cblack.onClick = function() {
+    app.beginUndoGroup("compblack");
+    curItem = app.project.activeItem;
+    
+    curItem.bgColor = [0,0,0];
+    app.endUndoGroup();
+    }
+
+//GREY BG
+ex4d.cgrey.onClick = function() {
+    app.beginUndoGroup("compgrey");
+    curItem = app.project.activeItem;
+    
+    curItem.bgColor = [.5,.5,.5];
+    app.endUndoGroup();
+    }
+
+//WHITE BG
+ex4d.cwhite.onClick = function() {
+    app.beginUndoGroup("compgrey");
+    curItem = app.project.activeItem;
+    
+    curItem.bgColor = [1,1,1];
+    app.endUndoGroup();
+    }
+
+//CUSTOM BG
+ex4d.ccustom.onClick = function() {                
+    if (ex4a.scustom.text != "") {
+            var cuscolor = ex4a.scustom.text;
+            
+            if (cuscolor.length == 7) {
+                var hex1 = parseInt(cuscolor[1],16);
+                var hex2 = parseInt(cuscolor[2],16);
+                var hex3 = parseInt(cuscolor[3],16);
+                var hex4 = parseInt(cuscolor[4],16);
+                var hex5 = parseInt(cuscolor[5],16);
+                var hex6 = parseInt(cuscolor[6],16);
+
+                var r = (((hex1)*16+(hex2))/255);
+                var g = (((hex3)*16+(hex4))/255);
+                var b = (((hex5)*16+(hex6))/255);
+            }
+
+            if(cuscolor.length == 4) {
+                var hex1 = parseInt(cuscolor[1],16);
+                var hex2 = parseInt(cuscolor[2],16);
+                var hex3 = parseInt(cuscolor[3],16);
+
+                var r = (((hex1)*16)/240);
+                var g = (((hex2)*16)/240);
+                var b = (((hex3)*16)/240);
+            }
+
+            curItem = app.project.activeItem;
+            
+            app.beginUndoGroup("customsolid");
+            curItem.bgColor = [r,g,b]; //Changes comp bg to custom color
+            app.endUndoGroup();
+      }
+    else if (ex4a.scustom.text == "") {
+        alert("Input a custom color. For example 'red', '#fff', or '#ff0000'.", "Custom Color Error");
+        }
+}
+
+
+//
+/* BEGINNING OF QUICK FX */
+//
 
 ex2a.quickCamBlur.onClick = function() {
     app.beginUndoGroup("quickCamBlur");
@@ -349,6 +553,11 @@ ex2b.quickSlider.onClick = function() {
     }
     app.endUndoGroup();
 }
+
+
+//
+/*BEGINNING OF CHROMA FX*/
+//
 
 ex3a.chromaSelective.onClick = function() {
     app.beginUndoGroup("chromaSelective");
