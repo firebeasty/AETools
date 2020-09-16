@@ -3,66 +3,68 @@
         function myScript_buildUI(thisObj){
             var myPanel = (thisObj instanceof Panel) ? thisObj : new Window('palette', 'AE Tools', undefined, {resizeable:true}, {scrollable:true});
 
-           res = "Group{orientation:'column',alignment:['fill','left'],\
-                            groupZero: Panel{text:'Active Tools',orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],spacing:0,\
-                                groupZeroA: Group{orientation: 'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0,\
+           res = "Group{orientation:'column',alignment:['left','left'],\
+                            groupZero: Panel{text:'Active Tools',orientation:'row',alignment:['left','top'],alignChildren:['left','top'],spacing:0,\
+                                groupZeroA: Group{orientation: 'row',alignment:['auto','top'],alignChildren:['auto','top'],margins:0,\
                                 exr: Checkbox{text:'EXR',helpTip:'Toggles EXR Workflow Panel'},\
                                 layer: Checkbox{text:'Layers',helpTip:'Toggles Add Layers Panel'},\
                                 quick: Checkbox{text:'QuickFX',helpTip:'Toggles QuickFX Panel'},\
                                 chroma: Checkbox{text:'ChromaFX',helpTip:'Toggles ChromaFX Panel'},\
                                 },\
                             },\
-                            groupOne: Panel{text:'EXR Workflow',alignment:['fill','top'],alignChildren:['fill','top'],spacing:0,\
-                                    groupOneA: Group{orientation: 'row',alignment:['fill','top'],alignChildren:['left','center'],minimumSize:[50,0], margins:0,\
+                            groupOne: Panel{text:'EXR Workflow',alignment:['left','top'],alignChildren:['auto','top'],spacing:0,\
+                                    groupOneA: Group{orientation: 'row',alignment:['auto','top'],alignChildren:['left','center'],minimumSize:[25,0], margins:0,\
                                         exr: Checkbox{text:'EXtractoR',helpTip:'Enables EXtractoR'},\
                                         gamma: Checkbox{text:'Exposure',helpTip:'Enables Exposure'},\
                                         gamLabel: StaticText{text:'Gamma:'},\
                                         gamEdit: EditText{minimumSize:[40,0],helpTip:'Sets gamma correction on Exposure effect. Default: 2.2'},\
                                         },\
-                                    groupOneB: Group{orientation:'column',alignment:['fill','top'],alignChildren:['fill','top'],margins:0, spacing:0,\
+                                    groupOneB: Group{orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0, spacing:0,\
+                                        unmult: Checkbox{text:'Unmult', helpTip:'Unmultiplies alpha. May help with dark fringes'},\
                                         addFX: Button{text:'EXtRact!', spacing: 0,margins: 0,helpTip:'Add selected FX to selected layer(s)'},\
                                         },\
                                 },\
-                            groupFour: Panel{text:'Add Layers', orientation:'column', alignment:['fill','top'], alignChildren:['center','top'], spacing:0,\
-                                groupFourA: Group{orientation:'row', alignment:['fill','top'], alignChildren:['left','center'],spacing:5,\
+                            groupFour: Panel{text:'Add Layers', orientation:'column', alignment:['left','top'], alignChildren:['left','top'], spacing:0,\
+                                groupFourA: Group{orientation:'row', alignment:['left','top'], alignChildren:['left','auto'],spacing:0,\
                                 ssync: Button{text:'↧',spacing: 0, maximumSize:[25,100], helpTip:'Get dimensions from active comp'},\
                                 width: StaticText{text:'W:',spacing:0},\
                                 swidth: EditText{minimumSize:[40,0]},\
                                 height: StaticText{text:'H:',spacing:0},\
                                 sheight: EditText{minimumSize:[40,0]},\
-                                custom: StaticText{text:'Custom Color:', spacing: 0},\
-                                scustom: EditText{minimumSize:[80,0], helpTip:'Enter any hex-color or X11 color preset (e.g. #ff0000, red, indigo)'},\
+                                custom: StaticText{text:'Color:', spacing: 0},\
+                                scustom: EditText{minimumSize:[80,0], helpTip:'Enter any hex-color or X11 color preset (e.g. #ff0000, red, indigo)', spacing: 0},\
                                 },\
-                                groupFourB: Group{orientation:'row', alignment:['fill','top'], alignChildren:['fill','center'],margins:0,spacing:0,\
-                                    sblack: Button{text:'Black', spacing:0},\
-                                    sgrey: Button{text:'50-Grey',spacing: 0},\
-                                    swhite: Button{text:'White', spacing:0},\
-                                    scustombutton: Button{text:'Custom', spacing:0},\
+                                groupFourB: Group{orientation:'row', alignment:['left','auto'], alignChildren:['left','auto'],margins:0,spacing:0,\
+                                    sblack: Button{text:'Black', spacing:0, maximumSize:[60,80]},\
+                                    sgrey: Button{text:'50Grey',spacing: 0, maximumSize:[60,80]},\
+                                    swhite: Button{text:'White', spacing:0, maximumSize:[60,80]},\
+                                    scustombutton: Button{text:'Custom', spacing:0, maximumSize:[60,80]},\
                                 },\
-                                groupFourC: Group{orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0,spacing:0,\
-                                    sadjust: Button{text:'Adjustment Layer', spacing:0},\
-                                    snull: Button{text:'Null Object', spacing:0},\
-                                    sshape: Button{text:'Shape Layer', spacing:0},\
+                                groupFourC: Group{orientation:'row',alignment:['left','top'],alignChildren:['left','top'],margins:0,spacing:0,\
+                                    sadjust: Button{text:'Adj', spacing:0, maximumSize:[60,80]},\
+                                    snull: Button{text:'Null', spacing:0, maximumSize:[60,80]},\
+                                    control: Button{text:'Control', spacing:0, maximumSize:[60,80]},\
+                                    sshape: Button{text:'Shape', spacing:0, maximumSize:[60,80]},\
                                     },\
-                                groupFourDa: Group{orientation:'row', alignment:['fill','top'],alignChildren:['left','top'],margins:0,spacing:0,\
+                                groupFourDa: Group{orientation:'row', alignment:['left','top'],alignChildren:['left','top'],margins:0,spacing:0,\
                                     clabel: StaticText{text:'Composition BG Color:', spacing:0},\
                                 },\
-                                groupFourD: Group{orientation:'row',alignment:['fill','top'],alignChildren:['fill','top'],margins:0,spacing:0,\
-                                    cblack: Button{text:'Black', spacing:0},\
-                                    cgrey: Button{text:'50-Grey', spacing:0},\
-                                    cwhite: Button{text:'White', spacing:0},\
-                                    ccustom: Button{text:'Custom', spacing:0},\
+                                groupFourD: Group{orientation:'row',alignment:['left','top'],alignChildren:['left','top'],margins:0,spacing:0,\
+                                    cblack: Button{text:'Black', spacing:0, maximumSize:[60,80]},\
+                                    cgrey: Button{text:'50Grey', spacing:0, maximumSize:[60,80]},\
+                                    cwhite: Button{text:'White', spacing:0, maximumSize:[60,80]},\
+                                    ccustom: Button{text:'Custom', spacing:0, maximumSize:[60,80]},\
                                     },\
                             },\
-                            groupTwo: Panel{text:'QuickFX', orientation:'row',alignment:['fill','top'], alignChildren:['fill','top'],\
-                                groupTwoA: Group{orientation:'column',alignment:['fill','top'], alignChildren:['fill','top'],margins:0, spacing:0,\
+                            groupTwo: Panel{text:'QuickFX', orientation:'row',alignment:['left','top'], alignChildren:['left','top'],\
+                                groupTwoA: Group{orientation:'column',alignment:['auto','top'], alignChildren:['fill','top'],margins:0, spacing:0,\
                                     quickCamBlur: Button{text:'Camera Lens Blur', spacing: 0,margins: 0},\
                                     quickGauss: Button{text:'Gaussian Blur',spacing:0},\
                                     quickToner: Button{text:'CC Toner',spacing:0},\
                                     quickCurve: Button{text:'Curves',spacing:0},\
                                     quickLumetri: Button{text:'Lumetri',spacing:0},\
                                 },\
-                                groupTwoB: Group{orientation:'column',alignment:['fill','top'], alignChildren:['fill','top'],margins:0, spacing: 0,\
+                                groupTwoB: Group{orientation:'column',alignment:['left','top'], alignChildren:['fill','top'],margins:0, spacing: 0,\
                                     quickTurbulent: Button{text:'Turbulent Displace',spacing:0},\
                                     quickFractal: Button{text:'Fractal Noise',spacing:0},\
                                     quickParticle: Button{text:'CC Particle World',spacing:0},\
@@ -70,12 +72,12 @@
                                     quickSlider: Button{text:'Slider Control',spacing:0},\
                                 },\
                             },\
-                           groupThree: Panel{text:'ChromaFX', orientation:'row',alignment:['fill','top'], alignChildren:['fill','top'],\
-                                groupThreeA: Group{orientation:'column',alignment:['fill','top'], alignChildren:['fill','top'],margins:0, spacing:0,\
+                           groupThree: Panel{text:'ChromaFX', orientation:'row',alignment:['left','top'], alignChildren:['fill','top'],\
+                                groupThreeA: Group{orientation:'column',alignment:['auto','top'], alignChildren:['fill','top'],margins:0, spacing:0,\
                                     chromaSelective: Button{text:'Selective Color', spacing: 0,margins: 0},\
                                     chromaKey: Button{text:'Keylight',spacing:0},\
                                 },\
-                                groupThreeB: Group{orientation:'column',alignment:['fill','top'], alignChildren:['fill','top'],margins:0, spacing: 0,\
+                                groupThreeB: Group{orientation:'column',alignment:['left','top'], alignChildren:['fill','top'],margins:0, spacing: 0,\
                                     chromaSpill: Button{text:'Adv. Spill Suppress',spacing:0},\
                                     chromaSoftMatte: Button{text:'Refine Soft Matte',spacing:0},\
                                 },\
@@ -106,6 +108,7 @@
             ex1a.exr.value = true; //box is checked
             ex1a.gamma.value = true; //boxed is checked
             ex1a.gamEdit.text = "2.2"; //default gamma correction
+            ex1b.unmult.value = true;
             ex4a.swidth.text = "1920";
             ex4a.sheight.text = "1080";
 
@@ -234,6 +237,9 @@ ex1b.addFX.onClick = function() {
         // Add checked off effects to the selected layers.
             if (ex1a.exr.value == true) {
                 var exp = curLayer.Effects.addProperty("EXtractoR");
+                if (ex1b.unmult.value == true) {
+                    exp.property("EXtractoR-0007").setValue(true);
+                    }
             }
             if (ex1a.gamma.value == true) {
                 var gammaAmount = parseFloat(ex1a.gamEdit.text);
@@ -306,6 +312,19 @@ ex4a.ssync.onClick = function() {
         app.beginUndoGroup("null");
             curItem = app.project.activeItem;
             curItem.layers.addNull();
+            
+            app.endUndoGroup();
+        }
+    
+    //CONTROLLER
+    ex4c.control.onClick = function() {
+        app.beginUndoGroup("controller");
+            curItem = app.project.activeItem;
+            controller = curItem.layers.addNull(); //creates nullobject
+            controller.guideLayer = true;
+            controller.name = "Controller";
+            controller.label = 14;
+            controller.enabled = false;
             
             app.endUndoGroup();
         }
