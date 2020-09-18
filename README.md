@@ -17,7 +17,7 @@ ChromaFX adds an additional section to the panel that contains effects used comm
 
 # Installation
 Install AETools by downloading the two .jsx files from the 'QuickFX' folder. Place both of the .jsx files into your After Effects installation directory.
-For example: "C:\Program Files\Adobe\Adobe After Effects CC 2019\Support Files\Scripts\ScriptUI Panels".
+For example: "C:\Program Files\Adobe\Adobe After Effects CC 2020\Support Files\Scripts\ScriptUI Panels".
 
 Load up AE, and go to Window. Select the UI Script from the bottom of the list.
 
