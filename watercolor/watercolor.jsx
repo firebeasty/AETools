@@ -13,7 +13,7 @@
                         groupTwo: Group{orientation:'row',alignment:['auto','top'], alignChildren:['fill','top'],margins:0,\
                             \
                             groupA: Group{orientation:'column',alignment:['fill','top'],alignChildren:['fill','top'],margins:0, spacing:2,\
-                                Watercolor: Button{text:'Watercolor', helpTip:'Automates Watercolor look'},\
+                                MasterSetup: Button{text:'Watercolor Master Comp', helpTip:'Automates Watercolor look'},\
                             },\
                         },\
                     }";
@@ -39,13 +39,14 @@
 
 //Animation Presets
 var ffxMasterControl = File(File($.fileName).path + "/watercolor-files/" + "controller_mastercomp.ffx"); //Master Comp Controller
+var ffxMasterShadowControl = File(File($.fileName).path + "/watercolor-files/" + "controller_shadow_mastercomp.ffx"); //Master Comp Shadow Controller
 var ffxBGCCMaster = File(File($.fileName).path + "/watercolor-files/" + "bgcc_mastercomp.ffx"); //BGCC Preset
 var ffxBGGradientMaster = File(File($.fileName).path + "/watercolor-files/" + "bggradient_mastercomp.ffx"); //BGCC Preset
 
 
-buttons.Watercolor.onClick = function() {
+buttons.MasterSetup.onClick = function() {
 // create an undo group
-app.beginUndoGroup("watercolor");    
+app.beginUndoGroup("watercolor");        
     
     var comp = app.project.activeItem;
     var parentComp = comp;
@@ -54,6 +55,8 @@ app.beginUndoGroup("watercolor");
     var originalNames = [];
     var originalIndicies = [];
     var precompNames = [];
+    var exrLayers = 0;
+
 
     if (myLayers.length == 0) {
         alert("Select Layer(s)");
@@ -92,28 +95,36 @@ app.beginUndoGroup("watercolor");
             masterControl.name = "Controller_"+suffix;
             masterControl.label = 14;
             masterControl.enabled = false;
-            masterControl.applyPreset(ffxMasterControl);
+            if(suffix == "shadow"){
+                masterControl.applyPreset(ffxMasterShadowControl);
+            } else {
+                masterControl.applyPreset(ffxMasterControl);
+            }
+            
+            exrLayers++;
         } 
     
-    const bgccMasterSolid = comp.layers.addSolid([1,1,1], 'BG_CC', comp.width, comp.height, 1.0);
-    bgccMasterSolid.applyPreset(ffxBGCCMaster);
-    bgccMasterSolid.adjustmentLayer = true;
+    if (exrLayers > 1) {
+        
+            for (i = 2; i <= exrLayers; i++) {
+                comp.layer(i).moveToBeginning();
+            }
+            
+            const bgccMasterSolid = comp.layers.addSolid([1,1,1], 'BG_CC', comp.width, comp.height, 1.0);
+            bgccMasterSolid.applyPreset(ffxBGCCMaster);
+            bgccMasterSolid.adjustmentLayer = true;
+            comp.layer(1).moveToEnd();
 
-    const bgGradMasterSolid = comp.layers.addSolid([1,1,1], 'BG_Gradient', comp.width, comp.height, 1.0);
-    bgGradMasterSolid.applyPreset(ffxBGGradientMaster);
+            const bgGradMasterSolid = comp.layers.addSolid([1,1,1], 'BG_Gradient', comp.width, comp.height, 1.0);
+            bgGradMasterSolid.applyPreset(ffxBGGradientMaster);
+            comp.layer(1).moveToEnd();
+        }
     
     }
-
+//~ myLayers = comp.layers;
+//~ comp.layer(3).moveBefore(myLayers[2]);
 
 // close the undo group
 app.endUndoGroup();
 }
     
-    
-    
-/*To-Do:
--Make the shadow controller unique so it doesn't have all the same controls - just color and opacity.
--Figure out expression on precomp controllers so they access the right controller in the Master using the controller's name
-
-
-*/
