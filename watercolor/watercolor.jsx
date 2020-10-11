@@ -13,7 +13,9 @@
                         groupTwo: Group{orientation:'row',alignment:['auto','top'], alignChildren:['fill','top'],margins:0,\
                             \
                             groupA: Group{orientation:'column',alignment:['fill','top'],alignChildren:['fill','top'],margins:0, spacing:2,\
-                                MasterSetup: Button{text:'Watercolor Master Comp', helpTip:'Automates Watercolor look'},\
+                                MasterSetup: Button{text:'WC Master Comp', helpTip:'Automates Watercolor master comp control layers and precomps layers'},\
+                                MainPrecompSetup: Button{text:'WC Obj Precomp', helpTip:'Use inside character and prop precomps to generate layers and FX presets'},\
+                                ShadowPrecompSetup: Button{text:'WC Shade Precomp', helpTip:'Use inside shadow and  to generate layers and FX presets'},\
                             },\
                         },\
                     }";
@@ -121,10 +123,35 @@ app.beginUndoGroup("watercolor");
         }
     
     }
-//~ myLayers = comp.layers;
-//~ comp.layer(3).moveBefore(myLayers[2]);
 
 // close the undo group
 app.endUndoGroup();
 }
     
+buttons.MainPrecompSetup.onClick = function() {
+
+// create an undo group
+app.beginUndoGroup("watercolor-precomp");        
+    
+    var comp = app.project.activeItem;
+
+
+
+// close the undo group
+app.endUndoGroup();
+}
+
+
+
+
+buttons.ShadowPrecompSetup.onClick = function() {
+
+// create an undo group
+app.beginUndoGroup("watercolor-precomp");        
+    
+    var comp = app.project.activeItem;
+
+
+// close the undo group
+app.endUndoGroup();
+}
