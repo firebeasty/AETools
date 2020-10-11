@@ -39,11 +39,17 @@
 // EXTERNAL FILES
 //
 
-//Animation Presets
+//ANIMATION FFX PRESETS
 var ffxMasterControl = File(File($.fileName).path + "/watercolor-files/" + "controller_mastercomp.ffx"); //Master Comp Controller
 var ffxMasterShadowControl = File(File($.fileName).path + "/watercolor-files/" + "controller_shadow_mastercomp.ffx"); //Master Comp Shadow Controller
 var ffxBGCCMaster = File(File($.fileName).path + "/watercolor-files/" + "bgcc_mastercomp.ffx"); //BGCC Preset
-var ffxBGGradientMaster = File(File($.fileName).path + "/watercolor-files/" + "bggradient_mastercomp.ffx"); //BGCC Preset
+var ffxBGGradientMaster = File(File($.fileName).path + "/watercolor-files/" + "bggradient_mastercomp.ffx"); //BGLayerStyle Preset
+
+    //PROP PRECOMP EXR FFX
+    var ffxPropDiffBase = File(File($.fileName).path + "/watercolor-files/" + "diff_base_precomp.ffx"); //Prop Diff_Base Preset
+    var ffxPropDiffLinesOver = File(File($.fileName).path + "/watercolor-files/" + "diff_lines_precomp.ffx"); //Prop Diff_LinesOverlay Preset
+    var ffxPropNrmShadowMatte = File(File($.fileName).path + "/watercolor-files/" + "nrm_shadowmatte_precomp.ffx"); //Prop Nrm_ShadowMatte Preset
+    var ffxPropDiffPaintTexMatte = File(File($.fileName).path + "/watercolor-files/" + "diff_paintmatte_precomp.ffx"); //Prop Diff_PaintTexMatte Preset
 
 
 buttons.MasterSetup.onClick = function() {
@@ -133,9 +139,50 @@ buttons.MainPrecompSetup.onClick = function() {
 // create an undo group
 app.beginUndoGroup("watercolor-precomp");        
     
+    
     var comp = app.project.activeItem;
-
-
+    var precompChecker = comp.name.split("_");
+    var exrNames = ['Diff_PaintTexMatte', 'Nrm_ShadowMatte', 'Diff_LinesOverlay', 'Diff_Base'];
+    var exrFFX = [ffxPropDiffPaintTexMatte, ffxPropNrmShadowMatte, ffxPropDiffLinesOver, ffxPropDiffBase];
+    
+    
+    if ((/[a-zA-Z]/).test(precompChecker[precompChecker.length-1]) == true) {
+    
+        //Duplicates out the four layers that make up the EXR layers
+        var firstLayer = comp.layer(1);
+        var firstNumFX = firstLayer.effect.numProperties;
+        
+        //Removes FX from EXR layer to begin duplication process.
+        if (firstNumFX > 0) {
+            for (i=firstNumFX; i >0; i--) { 
+            firstLayer.effect.property(i).remove();
+            }
+        }
+        
+        //Duplicates single EXR layer into 4 copies for watercolor process
+        firstLayer.duplicate();
+        firstLayer.duplicate();
+        firstLayer.duplicate();
+        
+        //Rename EXR layers and apply ffx presets to each.
+        for (i=1; i <= comp.numLayers; i++) {
+            
+            for (j=1; j <= comp.numLayers; j++){
+                comp.layer(j).selected = false;
+            }
+            
+            comp.layer(i).selected = true;
+            comp.layer(i).name = exrNames[i-1];
+            comp.layer(i).applyPreset(exrFFX[i-1]);  
+            comp.layer(i).label = 9;
+        }
+        
+        
+    
+    } else {
+        alert("Use in a character or prop precomp, not the master comp. Note - this script doesn't work unless the last suffix in the precomp name \
+(separated by underscores) starts with a letter. [E.g. character01 or prop]");
+        }
 
 // close the undo group
 app.endUndoGroup();
