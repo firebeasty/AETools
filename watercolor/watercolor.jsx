@@ -50,6 +50,13 @@ var ffxBGGradientMaster = File(File($.fileName).path + "/watercolor-files/" + "b
     var ffxPropDiffLinesOver = File(File($.fileName).path + "/watercolor-files/" + "diff_lines_precomp.ffx"); //Prop Diff_LinesOverlay Preset
     var ffxPropNrmShadowMatte = File(File($.fileName).path + "/watercolor-files/" + "nrm_shadowmatte_precomp.ffx"); //Prop Nrm_ShadowMatte Preset
     var ffxPropDiffPaintTexMatte = File(File($.fileName).path + "/watercolor-files/" + "diff_paintmatte_precomp.ffx"); //Prop Diff_PaintTexMatte Preset
+    //PROP PRECOMP SOLIDS FFX
+    var ffxPropShadowSolid = File(File($.fileName).path + "/watercolor-files/" + "shadow_solid_precomp.ffx"); //Prop ShadowSolid Preset
+    var ffxBoil = File(File($.fileName).path + "/watercolor-files/" + "boil_precomp.ffx"); //Prop Boil Adjustment Layer Preset
+    var ffxPaintTex = File(File($.fileName).path + "/watercolor-files/" + "painttex_precomp.ffx"); //Prop WaterColor Paint Texture Layer Preset
+    var ffxRoughen = File(File($.fileName).path + "/watercolor-files/" + "roughen_precomp.ffx"); //Prop Roughen Preset
+    //PROP CONTROLLER FFX
+    var ffxPropControlPrecomp = File(File($.fileName).path + "/watercolor-files/" + "controller_obj_precomp.ffx"); //Prop Roughen Preset
 
 
 buttons.MasterSetup.onClick = function() {
@@ -126,6 +133,14 @@ app.beginUndoGroup("watercolor");
             const bgGradMasterSolid = comp.layers.addSolid([1,1,1], 'BG_Gradient', comp.width, comp.height, 1.0);
             bgGradMasterSolid.applyPreset(ffxBGGradientMaster);
             comp.layer(1).moveToEnd();
+            
+            const canvasPlaceholder = comp.layers.addSolid([1,1,1], 'PaperTexture - Placeholder', comp.width, comp.height, 1.0);
+            canvasPlaceholder.blendingMode = BlendingMode.MULTIPLY;
+            canvasPlaceholder.moveAfter(comp.layer(exrLayers+1));
+            canvasPlaceholder.label = 11;
+            
+            alert("Replace Layer " +(exrLayers+1) + " (Orange) with your paper/canvas texture.\
+Manually adjust the scale/position per shot to change the look");
         }
     
     }
@@ -176,8 +191,63 @@ app.beginUndoGroup("watercolor-precomp");
             comp.layer(i).applyPreset(exrFFX[i-1]);  
             comp.layer(i).label = 9;
         }
+    
+        //Setup EXR layer blending modes, layer switches, and TRKMattes
+        comp.layer(1).enabled = false;
+        comp.layer(2).enabled = false;
+        comp.layer(3).blendingMode = BlendingMode.SOFT_LIGHT;
+        comp.layer(3).preserveTransparency = true;
+
         
+        //Shadow Solid
+        var prop_shadowSolid = comp.layers.addSolid([0,0,0], 'Shadow', comp.width, comp.height, 1.0);
+        prop_shadowSolid.applyPreset(ffxPropShadowSolid);
+        prop_shadowSolid.label = 10;
+        prop_shadowSolid.moveAfter(comp.layer(3));
+        prop_shadowSolid.blendingMode = BlendingMode.DARKEN;
+        prop_shadowSolid.trackMatteType = TrackMatteType.LUMA_INVERTED;
         
+        //Boil Layer
+        var prop_boilAdjust = comp.layers.addSolid([1,1,1], 'Boil', comp.width, comp.height, 1.0);
+        prop_boilAdjust.adjustmentLayer = true;
+        prop_boilAdjust.label = 13;
+        prop_boilAdjust.applyPreset(ffxBoil);
+        prop_boilAdjust.moveAfter(comp.layer(2));
+        
+        //Paint Tex Layer
+        var prop_paintTex = comp.layers.addSolid([0.5,0.5,0.5], 'PaintTex - Placeholder', comp.width, comp.height, 1.0);
+        prop_paintTex.applyPreset(ffxPaintTex);
+        prop_paintTex.label = 11;
+        prop_paintTex.applyPreset(ffxPaintTex);
+        prop_paintTex.moveAfter(comp.layer(2));
+        prop_paintTex.blendingMode = BlendingMode.SOFT_LIGHT;
+        prop_paintTex.preserveTransparency = true;
+        prop_paintTex.trackMatteType = TrackMatteType.ALPHA;
+        
+        //Roughen
+        var prop_roughen = comp.layers.addSolid([1,1,1], 'Roughen', comp.width, comp.height, 1.0);
+        prop_roughen.adjustmentLayer = true;
+        prop_roughen.label = 13;
+        prop_roughen.applyPreset(ffxRoughen);
+        
+        //Precomp Controller
+        var nameWords = comp.name.split("_");
+        var suffix = nameWords[nameWords.length-1];
+        var propController = comp.layers.addNull();
+        propController.name = "Controller_"+suffix;
+        propController.guideLayer = true;
+        propController.label = 14;
+        propController.enabled = false;
+        propController.applyPreset(ffxPropControlPrecomp);
+        
+        //SetMattes
+        comp.layer(8).effect(13)(1).setValue(9);
+        comp.layer(7).effect(1)(1).setValue(9);
+        comp.layer(6).effect(10)(1).setValue(9);
+        
+        alert("Replace Layer 4 (Orange) with your paint texture to finish the effect.\
+You may need to loopOut() the time remapping to get a repeating texture");
+                
     
     } else {
         alert("Use in a character or prop precomp, not the master comp. Note - this script doesn't work unless the last suffix in the precomp name \
