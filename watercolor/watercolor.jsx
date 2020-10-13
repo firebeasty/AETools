@@ -15,7 +15,8 @@
                             groupA: Group{orientation:'column',alignment:['fill','top'],alignChildren:['fill','top'],margins:0, spacing:2,\
                                 MasterSetup: Button{text:'WC Master Comp', helpTip:'Automates Watercolor master comp control layers and precomps layers'},\
                                 MainPrecompSetup: Button{text:'WC Obj Precomp', helpTip:'Use inside character and prop precomps to generate layers and FX presets'},\
-                                ShadowPrecompSetup: Button{text:'WC Shade Precomp', helpTip:'Use inside shadow and  to generate layers and FX presets'},\
+                                ShadowPrecompSetup: Button{text:'WC Shadow Precomp', helpTip:'Use inside shadow and  to generate layers and FX presets'},\
+                                TextureLoopOut: Button{text:'LoopOut() Texture', helpTip:'Use on a selected animated paper or watercolor texture to automatically loopOut the timeremapping for you.'},\
                             },\
                         },\
                     }";
@@ -36,6 +37,8 @@
    myScript(this);
    }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // EXTERNAL FILES
 //
 
@@ -44,6 +47,7 @@ var ffxMasterControl = File(File($.fileName).path + "/watercolor-files/" + "cont
 var ffxMasterShadowControl = File(File($.fileName).path + "/watercolor-files/" + "controller_shadow_mastercomp.ffx"); //Master Comp Shadow Controller
 var ffxBGCCMaster = File(File($.fileName).path + "/watercolor-files/" + "bgcc_mastercomp.ffx"); //BGCC Preset
 var ffxBGGradientMaster = File(File($.fileName).path + "/watercolor-files/" + "bggradient_mastercomp.ffx"); //BGLayerStyle Preset
+var ffxShadowOpacityMaster = File(File($.fileName).path + "/watercolor-files/" + "shadow_opacity_mastercomp.ffx"); //BGLayerStyle Preset
 
     //PROP PRECOMP EXR FFX
     var ffxPropDiffBase = File(File($.fileName).path + "/watercolor-files/" + "diff_base_precomp.ffx"); //Prop Diff_Base Preset
@@ -56,8 +60,19 @@ var ffxBGGradientMaster = File(File($.fileName).path + "/watercolor-files/" + "b
     var ffxPaintTex = File(File($.fileName).path + "/watercolor-files/" + "painttex_precomp.ffx"); //Prop WaterColor Paint Texture Layer Preset
     var ffxRoughen = File(File($.fileName).path + "/watercolor-files/" + "roughen_precomp.ffx"); //Prop Roughen Preset
     //PROP CONTROLLER FFX
-    var ffxPropControlPrecomp = File(File($.fileName).path + "/watercolor-files/" + "controller_obj_precomp.ffx"); //Prop Roughen Preset
+    var ffxPropControlPrecomp = File(File($.fileName).path + "/watercolor-files/" + "controller_obj_precomp.ffx"); //Prop Precomp Controller Preset
+    
+    //SHADOW PRECOMP EXR FFX
+    var ffxShadDiffBase = File(File($.fileName).path + "/watercolor-files/" + "shadow_diff_base_precomp.ffx"); //Shadow Diff_Base Preset
+    var ffxShadDiffLinesOver = File(File($.fileName).path + "/watercolor-files/" + "shadow_diff_lines_precomp.ffx"); //Shadow Diff_LinesOverlay Preset
+    var ffxShadDiffPaintTexMatte = File(File($.fileName).path + "/watercolor-files/" + "shadow_diff_paintmatte_precomp.ffx"); //Prop Diff_PaintTexMatte Preset
+    //SHADOW CONTROLLER FFX
+    var ffxShadControlPrecomp = File(File($.fileName).path + "/watercolor-files/" + "controller_shadow_precomp.ffx"); //Shadow Precomp Controller Preset
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Master Comp Setup
 
 buttons.MasterSetup.onClick = function() {
 // create an undo group
@@ -103,6 +118,10 @@ app.beginUndoGroup("watercolor");
            //Renames precomps in Master comp to original layer name
             var currentIndex = originalIndicies[i];
             comp.layer(currentIndex).name = originalNames[i];
+            comp.layer(currentIndex).label = 9;
+            if (comp.layer(currentIndex).name == "shadow") {
+                    comp.layer(currentIndex).applyPreset(ffxShadowOpacityMaster);
+                }
             
             
             var masterControl = comp.layers.addNull();
@@ -148,7 +167,11 @@ Manually adjust the scale/position per shot to change the look");
 // close the undo group
 app.endUndoGroup();
 }
-    
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Prop/Character Precomp Setup
+
 buttons.MainPrecompSetup.onClick = function() {
 
 // create an undo group
@@ -160,8 +183,8 @@ app.beginUndoGroup("watercolor-precomp");
     var exrNames = ['Diff_PaintTexMatte', 'Nrm_ShadowMatte', 'Diff_LinesOverlay', 'Diff_Base'];
     var exrFFX = [ffxPropDiffPaintTexMatte, ffxPropNrmShadowMatte, ffxPropDiffLinesOver, ffxPropDiffBase];
     
-    
-    if ((/[a-zA-Z]/).test(precompChecker[precompChecker.length-1]) == true) {
+
+    if ((/[a-zA-Z]/).test(precompChecker[precompChecker.length-1]) == true && precompChecker[precompChecker.length-1] != "shadow") {
     
         //Duplicates out the four layers that make up the EXR layers
         var firstLayer = comp.layer(1);
@@ -223,6 +246,7 @@ app.beginUndoGroup("watercolor-precomp");
         prop_paintTex.blendingMode = BlendingMode.SOFT_LIGHT;
         prop_paintTex.preserveTransparency = true;
         prop_paintTex.trackMatteType = TrackMatteType.ALPHA;
+        prop_paintTex.transform.opacity.setValue(75);
         
         //Roughen
         var prop_roughen = comp.layers.addSolid([1,1,1], 'Roughen', comp.width, comp.height, 1.0);
@@ -246,12 +270,11 @@ app.beginUndoGroup("watercolor-precomp");
         comp.layer(6).effect(10)(1).setValue(9);
         
         alert("Replace Layer 4 (Orange) with your paint texture to finish the effect.\
-You may need to loopOut() the time remapping to get a repeating texture");
+You may need to loopOut() the time remapping to get a repeating texture. Also make sure you set the correct EXR channels on the green layers. The layer prefix tells you what channels to use. Note: DIFF could be combined/beauty pass too.");
                 
     
     } else {
-        alert("Use in a character or prop precomp, not the master comp. Note - this script doesn't work unless the last suffix in the precomp name \
-(separated by underscores) starts with a letter. [E.g. character01 or prop]");
+        alert("Use in a character or prop precomp, not the master comp or shadow precomp. Note - this script doesn't work unless the last suffix in the precomp name (separated by underscores) starts with a letter. [E.g. character01 or prop]");
         }
 
 // close the undo group
@@ -259,14 +282,140 @@ app.endUndoGroup();
 }
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Shadow Precomp Setup
 
 buttons.ShadowPrecompSetup.onClick = function() {
 
 // create an undo group
-app.beginUndoGroup("watercolor-precomp");        
+app.beginUndoGroup("watercolor-shadow_precomp");        
+
     
     var comp = app.project.activeItem;
+    var precompChecker = comp.name.split("_");
+    var exrNames = ['Diff_PaintTexMatte', 'Diff_LinesOverlay', 'Diff_Base'];
+    var exrFFX = [ffxShadDiffPaintTexMatte, ffxShadDiffLinesOver, ffxShadDiffBase];
+
+    
+    if ((/[a-zA-Z]/).test(precompChecker[precompChecker.length-1]) == true && precompChecker[precompChecker.length-1] == "shadow") {
+            
+        //Duplicates out the four layers that make up the EXR layers
+        var firstLayer = comp.layer(1);
+        var firstNumFX = firstLayer.effect.numProperties;
+        
+        //Removes FX from EXR layer to begin duplication process.
+        if (firstNumFX > 0) {
+            for (i=firstNumFX; i >0; i--) { 
+            firstLayer.effect.property(i).remove();
+            }
+        }
+        
+        //Duplicates single EXR layer into 3 copies for watercolor shadow process
+        firstLayer.duplicate();
+        firstLayer.duplicate();
+          
+        //Rename EXR layers and apply ffx presets to each.
+        for (i=1; i <= comp.numLayers; i++) {
+            
+            for (j=1; j <= comp.numLayers; j++){
+                comp.layer(j).selected = false;
+            }
+            
+            comp.layer(i).selected = true;
+            comp.layer(i).name = exrNames[i-1];
+            comp.layer(i).applyPreset(exrFFX[i-1]);  
+            comp.layer(i).label = 9;
+        }
+    
+        //Setup EXR layer blending modes, layer switches, and TRKMattes
+        comp.layer(1).enabled = false;
+        comp.layer(2).blendingMode = BlendingMode.SOFT_LIGHT;
+        comp.layer(2).preserveTransparency = true;
+        
+        
+        //Boil Layer
+        var prop_boilAdjust = comp.layers.addSolid([1,1,1], 'Boil', comp.width, comp.height, 1.0);
+        prop_boilAdjust.adjustmentLayer = true;
+        prop_boilAdjust.label = 13;
+        prop_boilAdjust.applyPreset(ffxBoil);
+        prop_boilAdjust.moveAfter(comp.layer(2));
+        
+        
+        //Paint Tex Layer
+        var prop_paintTex = comp.layers.addSolid([0.5,0.5,0.5], 'PaintTex - Placeholder', comp.width, comp.height, 1.0);
+        prop_paintTex.applyPreset(ffxPaintTex);
+        prop_paintTex.label = 11;
+        prop_paintTex.applyPreset(ffxPaintTex);
+        prop_paintTex.moveAfter(comp.layer(2));
+        prop_paintTex.blendingMode = BlendingMode.SOFT_LIGHT;
+        prop_paintTex.preserveTransparency = true;
+        prop_paintTex.trackMatteType = TrackMatteType.ALPHA;
+        
+        //Roughen
+        var prop_roughen = comp.layers.addSolid([1,1,1], 'Roughen', comp.width, comp.height, 1.0);
+        prop_roughen.adjustmentLayer = true;
+        prop_roughen.label = 13;
+        prop_roughen.applyPreset(ffxRoughen);
+        
+        //Precomp Controller
+        var nameWords = comp.name.split("_");
+        var suffix = nameWords[nameWords.length-1];
+        var propController = comp.layers.addNull();
+        propController.name = "Controller_"+suffix;
+        propController.guideLayer = true;
+        propController.label = 14;
+        propController.enabled = false;
+        propController.applyPreset(ffxShadControlPrecomp);
+        
+         //SetMattes
+        comp.layer(6).effect(13)(1).setValue(7);        
+            
+        alert("Replace Layer 4 (Orange) with your paint texture to finish the effect.\
+You may need to loopOut() the time remapping to get a repeating texture. Also make sure you set the correct EXR channels on the green layers. The layer prefix tells you what channels to use. Note: DIFF could be combined/beauty pass too.");
+
+    } else {
+        alert("Use in a 'shadow' precomp, not the master comp or other precomps. Note - this script doesn't work unless the last suffix in the precomp name is 'shadow'. [E.g. ep100_shot_01_shadow]");
+    }       
+
+
+// close the undo group
+app.endUndoGroup();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// LoopOut Selected Layer
+
+buttons.TextureLoopOut.onClick = function() {
+
+// create an undo group
+app.beginUndoGroup("watercolor-loopOutTexture");
+
+    var comp = app.project.activeItem;
+    var myLayers = comp.selectedLayers;
+    
+    if (myLayers.length > 0) {
+        
+        for (i = 0; i < myLayers.length; i++) {
+            if(myLayers[i].canSetTimeRemapEnabled) {
+                myLayers[i].timeRemapEnabled=false;
+                myLayers[i].timeRemapEnabled=true;
+            }
+            var loopMe = myLayers[i].timeRemap;
+            
+            if (loopMe.canSetExpression) {
+                loopMe.expression = 
+"var frames = key(2).value-key(1).value;\
+\
+time%frames";
+                }
+            
+        }
+    
+    } else {
+        alert("Select precomp or footage layer(s) to loopOut() its timeRemapping");
+        }
 
 
 // close the undo group
